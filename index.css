@@ -1,0 +1,14 @@
+.inner-row{
+    border-top: dashed;
+    border-bottom:dashed;
+}
+.inner-column{
+    border-left: dashed;
+    border-right: dashed;
+}
+table tr td{
+    width:100px;
+    height: 100px;
+    text-align: center;
+    font-size: xx-large;
+}
