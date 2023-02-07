@@ -98,6 +98,9 @@ function checkWin(letter, row, column) {
 }
 
 function isValidSquare(row, column) {
+    if(gameState.board[row][column] !== null){
+        return false
+    }
   return true;
 }
 //when a player clicks on a square
@@ -134,7 +137,7 @@ function createBoard(rows, columns) {
       if (i > 0 && i < rows - 1) {
         newHTMLSquare.classList.add("inner-row");
       }
-      newRow.push(squareCount);
+      newRow.push(null);
       squareCount++;
       newHTMLRow.appendChild(newHTMLSquare);
     }
