@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link rel="stylesheet" href="index.css"/>
+  <head>
+    <link rel="stylesheet" href="index.css" />
     <script src="index.js" defer></script>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Tic-Tac-Toe</h1>
+    <select id="letter-sel">
+      <option>choose Letter</option>
+      <option>X(first)</option>
+      <option>O(second)</option>
+    </select>
+    <select id="player-sel">
+      <option>choose opponent</option>
+      <option>player two</option>
+      <option>computer</option>
+    </select>
+    <h2><button>START</button></h2>
     <table>
-        <tr>
-            <td>1</td>
-            <td class="inner-column">2</td>
-            <td>3</td>
-        </tr>
-        <tr>
-            <td class="inner-row">4</td>
-            <td class="inner-column inner-row">5</td>
-            <td class="inner-row">6</td>
-        </tr>
-        <tr>
-            <td>7</td>
-            <td class="inner-column">8</td>
-            <td>9</td>
-        </tr>
+      <tr>
+        <td id="0">1</td>
+        <td id="1" class="inner-column">2</td>
+        <td id="2">3</td>
+      </tr>
+      <tr>
+        <td id="3" class="inner-row">4</td>
+        <td id="4" class="inner-column inner-row">5</td>
+        <td id="5" class="inner-row">6</td>
+      </tr>
+      <tr>
+        <td id="6">7</td>
+        <td id="7" class="inner-column">8</td>
+        <td id="8">9</td>
+      </tr>
     </table>
-</body>
+  </body>
 </html>
