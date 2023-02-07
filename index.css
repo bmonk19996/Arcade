@@ -6,9 +6,10 @@
     border-left: dashed;
     border-right: dashed;
 }
-table tr td{
+td{
     width:100px;
     height: 100px;
     text-align: center;
     font-size: xx-large;
+
 }
