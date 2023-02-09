@@ -1,11 +1,13 @@
 const myBoard = document.getElementById("board");
 const winMessage = document.getElementById("win-message");
+const warningMessage = document.getElementById("warning");
 const startButton = document.getElementById("start");
-const selectLetter = document.getElementById('letter-sel');
-const selectPlayer = document.getElementById('player-sel');
-const selectRow = document.getElementById('row-sel')
-const selectColumn = document.getElementById('column-sel')
-const replacementText = document.getElementById("replacement-text")
+const selectLetter = document.getElementById("letter-sel");
+const selectPlayer = document.getElementById("player-sel");
+const selectRow = document.getElementById("row-sel");
+const selectColumn = document.getElementById("column-sel");
+const selectWin = document.getElementById("win-sel");
+const replacementText = document.getElementById("replacement-text");
 const selectChoices = {
   board: [],
   rows: 3,
@@ -15,8 +17,8 @@ const selectChoices = {
   letters: ["X", "O"],
   playerOneTurn: true,
   start: true,
-  computerStart: false
-}
+  computerStart: false,
+};
 const gameState = {
   board: [],
   rows: 3,
@@ -26,7 +28,7 @@ const gameState = {
   letters: ["X", "O"],
   playerOneTurn: true,
   start: false,
-  computerStart: false
+  computerStart: false,
 };
 //updates the board the user sees with the square changed
 function playerMove(isPlayerOne, mySquare) {
@@ -53,7 +55,9 @@ function checkWin(letter, row, column) {
     } else {
       count = 0;
     }
+      console.log(count," ",gameState.winNum)
     if (count === gameState.winNum) {
+      console.log('hello')
       return true;
     }
   }
@@ -139,7 +143,6 @@ function winGame() {
 }
 //when a player clicks on a square
 function selectSquare(event) {
-
   const mySquare = event.target;
   if (gameState.start) {
     if (mySquare.matches("td")) {
@@ -149,22 +152,21 @@ function selectSquare(event) {
       if (isValidSquare(row, column)) {
         letter = playerMove(gameState.playerOneTurn, mySquare);
         updateBoard(letter, row, column);
-        console.log(gameState.board)
         if (checkWin(letter, row, column)) {
           winGame();
         }
-      
-      //change player turn and check if computer is other player
-      gameState.playerOneTurn = !gameState.playerOneTurn;
-      if (!gameState.pTwoHuman) {
-        let win = computerMove();
-        if (win) {
-          winGame();
-        }
-        //return to player one turn
+
+        //change player turn and check if computer is other player
         gameState.playerOneTurn = !gameState.playerOneTurn;
+        if (!gameState.pTwoHuman) {
+          let win = computerMove();
+          if (win) {
+            winGame();
+          }
+          //return to player one turn
+          gameState.playerOneTurn = !gameState.playerOneTurn;
+        }
       }
-    }
     } else {
       //invalid square
     }
@@ -292,43 +294,75 @@ function startGame() {
   while (myBoard.firstElementChild) {
     myBoard.removeChild(myBoard.firstElementChild);
   }
-  for(let key in selectChoices){
-    gameState[key] = selectChoices[key]
+  for (let key in selectChoices) {
+    gameState[key] = selectChoices[key];
   }
-  while(gameState.board.length){
-    gameState.board.pop()
+  while (gameState.board.length) {
+    gameState.board.pop();
   }
   createBoard(gameState.rows, gameState.columns);
   startButton.innerText = "RESTART";
   winMessage.innerText = "";
-  if(gameState.computerStart === true){
-    computerMove()
+  if (gameState.computerStart === true) {
+    computerMove();
   }
 }
-function changePlayer(clickEvent){
-  if(clickEvent.target.value === "human"){
-    selectLetter.classList.add('hide')
-    replacementText.classList.remove('hide')
-    selectChoices.pTwoHuman = true
+function changePlayer(clickEvent) {
+  if (clickEvent.target.value === "human") {
+    selectLetter.classList.add("hide");
+    replacementText.classList.remove("hide");
+    selectChoices.pTwoHuman = true;
+    selectChoices.letters[0] = "X";
+    selectChoices.letters[1] = "O";
+    selectChoices.computerStart = false;
+    selectLetter.selectedIndex = 0;
   }
-  if(clickEvent.target.value === "computer"){
-    selectLetter.classList.remove('hide')
-    replacementText.classList.add('hide')
-    selectChoices.pTwoHuman = false
+  if (clickEvent.target.value === "computer") {
+    selectLetter.classList.remove("hide");
+    replacementText.classList.add("hide");
+    selectChoices.pTwoHuman = false;
   }
-
 }
-function changeLetter(clickEvent){
-
+function changeLetter(clickEvent) {
+  if (clickEvent.target.value === "X(first)") {
+    selectChoices.letters[0] = "X";
+    selectChoices.letters[1] = "O";
+    selectChoices.computerStart = false;
+  }
+  if (clickEvent.target.value === "O(second)") {
+    selectChoices.letters[0] = "O";
+    selectChoices.letters[1] = "X";
+    selectChoices.computerStart = true;
+  }
 }
-function changeColumn(clickEvent){
+function changeColumn(clickEvent) {
+  selectChoices.columns = clickEvent.target.value;
+  warning()
+}
+function changeRow(clickEvent) {
+  selectChoices.rows = clickEvent.target.value;
+  warning();
+}
+function changeWin(clickEvent) {
+  selectChoices.winNum = Number(clickEvent.target.value);
+  warning()
+}
+//display error if new board is not able to be created
+function warning(){
+    if (
+      selectChoices.winNum > selectChoices.rows &&
+      selectChoices.winNum > selectChoices.columns
+    ) {
+      warningMessage.innerText = "Warning board to small to win game";
+      
+    } else {
+      warningMessage.innerText = "";
+      
+    }
   
 }
-function changeRow(clickEvent){
-  
-}
-
 selectRow.addEventListener("change", changeRow);
+selectWin.addEventListener("change", changeWin);
 selectColumn.addEventListener("change", changeColumn);
 selectLetter.addEventListener("change", changeLetter);
 selectPlayer.addEventListener("change", changePlayer);
