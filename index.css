@@ -11,6 +11,17 @@ td{
     font-size: xx-large;
 
 }
-#letter-sel{
+.hide{
     display:none;
+}
+article{
+    display:flex;
+    flex-direction: row;
+
+}
+article span{
+    padding: 10px;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
 }

@@ -4,14 +4,25 @@ const startButton = document.getElementById("start");
 const selectLetter = document.getElementById('letter-sel');
 const selectPlayer = document.getElementById('player-sel');
 const selectRow = document.getElementById('row-sel')
-const selectCOlumn = document.getElementById('column-sel')
-
+const selectColumn = document.getElementById('column-sel')
+const replacementText = document.getElementById("replacement-text")
+const selectChoices = {
+  board: [],
+  rows: 3,
+  columns: 3,
+  winNum: 3,
+  pTwoHuman: false,
+  letters: ["X", "O"],
+  playerOneTurn: true,
+  start: true,
+  computerStart: false
+}
 const gameState = {
   board: [],
   rows: 3,
   columns: 3,
   winNum: 3,
-  pTwoHuman: true,
+  pTwoHuman: false,
   letters: ["X", "O"],
   playerOneTurn: true,
   start: false,
@@ -128,6 +139,7 @@ function winGame() {
 }
 //when a player clicks on a square
 function selectSquare(event) {
+
   const mySquare = event.target;
   if (gameState.start) {
     if (mySquare.matches("td")) {
@@ -137,10 +149,11 @@ function selectSquare(event) {
       if (isValidSquare(row, column)) {
         letter = playerMove(gameState.playerOneTurn, mySquare);
         updateBoard(letter, row, column);
+        console.log(gameState.board)
         if (checkWin(letter, row, column)) {
           winGame();
         }
-      }
+      
       //change player turn and check if computer is other player
       gameState.playerOneTurn = !gameState.playerOneTurn;
       if (!gameState.pTwoHuman) {
@@ -151,6 +164,7 @@ function selectSquare(event) {
         //return to player one turn
         gameState.playerOneTurn = !gameState.playerOneTurn;
       }
+    }
     } else {
       //invalid square
     }
@@ -278,9 +292,12 @@ function startGame() {
   while (myBoard.firstElementChild) {
     myBoard.removeChild(myBoard.firstElementChild);
   }
-  gameState.board = [];
-  gameState.start = true;
- gameState.playerOneTurn = true;
+  for(let key in selectChoices){
+    gameState[key] = selectChoices[key]
+  }
+  while(gameState.board.length){
+    gameState.board.pop()
+  }
   createBoard(gameState.rows, gameState.columns);
   startButton.innerText = "RESTART";
   winMessage.innerText = "";
@@ -288,7 +305,32 @@ function startGame() {
     computerMove()
   }
 }
+function changePlayer(clickEvent){
+  if(clickEvent.target.value === "human"){
+    selectLetter.classList.add('hide')
+    replacementText.classList.remove('hide')
+    selectChoices.pTwoHuman = true
+  }
+  if(clickEvent.target.value === "computer"){
+    selectLetter.classList.remove('hide')
+    replacementText.classList.add('hide')
+    selectChoices.pTwoHuman = false
+  }
 
-selectPlayer.addEventListener();
+}
+function changeLetter(clickEvent){
+
+}
+function changeColumn(clickEvent){
+  
+}
+function changeRow(clickEvent){
+  
+}
+
+selectRow.addEventListener("change", changeRow);
+selectColumn.addEventListener("change", changeColumn);
+selectLetter.addEventListener("change", changeLetter);
+selectPlayer.addEventListener("change", changePlayer);
 myBoard.addEventListener("click", selectSquare);
 startButton.addEventListener("click", startGame);
