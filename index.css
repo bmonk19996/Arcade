@@ -11,3 +11,6 @@ td{
     font-size: xx-large;
 
 }
+#letter-sel{
+    display:none;
+}

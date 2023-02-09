@@ -1,11 +1,21 @@
 const myBoard = document.getElementById("board");
 const winMessage = document.getElementById("win-message");
+const startButton = document.getElementById("start");
+const selectLetter = document.getElementById('letter-sel');
+const selectPlayer = document.getElementById('player-sel');
+const selectRow = document.getElementById('row-sel')
+const selectCOlumn = document.getElementById('column-sel')
+
 const gameState = {
   board: [],
+  rows: 3,
+  columns: 3,
   winNum: 3,
-  pTwoHuman: false,
+  pTwoHuman: true,
   letters: ["X", "O"],
   playerOneTurn: true,
+  start: false,
+  computerStart: false
 };
 //updates the board the user sees with the square changed
 function playerMove(isPlayerOne, mySquare) {
@@ -79,6 +89,7 @@ function checkWin(letter, row, column) {
       gameState.board[0].length - 1,
     ];
   }
+  count = 0;
   while (gameState.board[myCoordinate[0]] !== undefined) {
     //end the loop because you are checking out of bounds of the board
     if (gameState.board[myCoordinate[0]][myCoordinate[1]] === letter) {
@@ -112,36 +123,37 @@ function winGame() {
   } else {
     winner = "the computer";
   }
-
+  endGame();
   winMessage.innerText = `${winner} has won the game`;
 }
 //when a player clicks on a square
 function selectSquare(event) {
   const mySquare = event.target;
-
-  if (mySquare.matches("td")) {
-    let squareNumber = mySquare.id;
-    let row = Math.floor(squareNumber / gameState.board[0].length);
-    let column = squareNumber % gameState.board[0].length;
-    if (isValidSquare(row, column)) {
-      letter = playerMove(gameState.playerOneTurn, mySquare);
-      updateBoard(letter, row, column);
-      if (checkWin(letter, row, column)) {
-        winGame();
+  if (gameState.start) {
+    if (mySquare.matches("td")) {
+      let squareNumber = mySquare.id;
+      let row = Math.floor(squareNumber / gameState.board[0].length);
+      let column = squareNumber % gameState.board[0].length;
+      if (isValidSquare(row, column)) {
+        letter = playerMove(gameState.playerOneTurn, mySquare);
+        updateBoard(letter, row, column);
+        if (checkWin(letter, row, column)) {
+          winGame();
+        }
       }
-    }
-    //change player turn and check if computer is other player
-    gameState.playerOneTurn = !gameState.playerOneTurn;
-    if (!gameState.pTwoHuman) {
-      let win = computerMove();
-      if (win) {
-        winGame();
-      }
-              //return to player one turn
+      //change player turn and check if computer is other player
       gameState.playerOneTurn = !gameState.playerOneTurn;
+      if (!gameState.pTwoHuman) {
+        let win = computerMove();
+        if (win) {
+          winGame();
+        }
+        //return to player one turn
+        gameState.playerOneTurn = !gameState.playerOneTurn;
+      }
+    } else {
+      //invalid square
     }
-  } else {
-    //invalid square
   }
 }
 //creates the board in JS and html
@@ -152,7 +164,7 @@ function createBoard(rows, columns) {
     let newRow = [];
     for (let j = 0; j < columns; j++) {
       const newHTMLSquare = document.createElement("td");
-      newHTMLSquare.innerText = squareCount;
+      newHTMLSquare.innerText = "";
       newHTMLSquare.id = squareCount;
       if (j > 0) {
         newHTMLSquare.classList.add("inner-column");
@@ -170,24 +182,113 @@ function createBoard(rows, columns) {
 }
 //does the computer move and returns true if the move won the game
 function computerMove() {
+  //get all available moves and check for a draw
+  if (gameState.start) {
+    freeSquares = validSquares();
+    if (freeSquares.length === 0) {
+      drawGame();
+      return false;
+    }
+    if (freeSquares.length === 1) {
+      const mySquare = document.getElementById(freeSquares[0][0]);
+      playerMove(false, mySquare);
+      updateBoard(
+        playerMove(false, mySquare),
+        freeSquares[0][1],
+        freeSquares[0][2]
+      );
+      drawGame();
+      return false;
+    }
+    let squareCount = 0;
+    //check for winning moves and do them
+    for (let i = 0; i < gameState.board.length; i++) {
+      for (let j = 0; j < gameState.board[0].length; j++) {
+        if (isValidSquare(i, j)) {
+          updateBoard(gameState.letters[1], i, j);
+          if (checkWin(gameState.letters[1], i, j)) {
+            const mySquare = document.getElementById(squareCount);
+            mySquare.innerText = gameState.letters[1];
+
+            return true;
+          }
+          updateBoard(null, i, j);
+        }
+        squareCount++;
+      }
+    }
+    //check to stop winning moves for player one and do them
+    squareCount = 0;
+    for (let i = 0; i < gameState.board.length; i++) {
+      for (let j = 0; j < gameState.board[0].length; j++) {
+        if (isValidSquare(i, j)) {
+          updateBoard(gameState.letters[0], i, j);
+          if (checkWin(gameState.letters[0], i, j)) {
+            updateBoard(gameState.letters[1], i, j);
+            const mySquare = document.getElementById(squareCount);
+            mySquare.innerText = gameState.letters[1];
+            return false;
+          }
+          updateBoard(null, i, j);
+        }
+        squareCount++;
+      }
+    }
+    //choose one at random
+
+    let ranNum = Math.floor(Math.random() * freeSquares.length);
+    const mySquare = document.getElementById(freeSquares[ranNum][0]);
+    playerMove(false, mySquare);
+    updateBoard(
+      playerMove(false, mySquare),
+      freeSquares[ranNum][1],
+      freeSquares[ranNum][2]
+    );
+  }
+  return false;
+}
+//returns an array of all valid squareNumbers with their row and column
+function validSquares() {
+  squares = [];
   let squareNumber = 0;
-  //check for winning moves and do them
   for (let i = 0; i < gameState.board.length; i++) {
     for (let j = 0; j < gameState.board[0].length; j++) {
       if (isValidSquare(i, j)) {
-        updateBoard(gameState.letters[1], i, j);
-        if (checkWin(gameState.letters[1], i, j)) {
-          const mySquare = document.getElementById(squareNumber);
-          console.log(mySquare);
-        }
-        updateBoard(null, i, j);
+        squares.push([squareNumber, i, j]);
       }
+
       squareNumber++;
     }
   }
-  return true;
+
+  return squares;
+}
+//no free squares end the game in a draw
+function drawGame() {
+  winMessage.innerText = `the game has ended in a draw`;
+  endGame();
+}
+//stop any more changes from happening
+function endGame() {
+  gameState.start = false;
 }
 
-createBoard(5, 5);
+function startGame() {
+  //clear old board
+  while (myBoard.firstElementChild) {
+    myBoard.removeChild(myBoard.firstElementChild);
+  }
+  gameState.board = [];
+  gameState.start = true;
+ gameState.playerOneTurn = true;
+  createBoard(gameState.rows, gameState.columns);
+  startButton.innerText = "RESTART";
+  winMessage.innerText = "";
+  if(gameState.computerStart === true){
+    computerMove()
+  }
+}
 
+selectPlayer.addEventListener();
 myBoard.addEventListener("click", selectSquare);
+startButton.addEventListener("click", startGame);
