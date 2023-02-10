@@ -19,6 +19,12 @@ article{
     flex-direction: row;
 
 }
+.red{
+    background-color: red;
+}
+.blue{
+    background-color: blue;
+}
 article span{
     padding: 10px;
     display:flex;
