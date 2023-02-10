@@ -132,6 +132,7 @@ function isValidSquare(row, column) {
 function winGame() {
   let winner = "";
   if (gameState.playerOneTurn) {
+    
     winner = "player one";
   } else if (gameState.pTwoHuman) {
     winner = "player two";
