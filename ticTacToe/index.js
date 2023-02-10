@@ -349,7 +349,7 @@ function changeWin(clickEvent) {
   selectChoices.winNum = Number(clickEvent.target.value);
   warning()
 }
-//display error if new board is not able to be created
+//display error if new board is not able to be created in a way that can be won
 function warning(){
     if (
       selectChoices.winNum > selectChoices.rows &&
