@@ -31,24 +31,106 @@ const gameState = {
 };
 
 //        console.log(newHTMLSquare.classList[0])
-
+function updateBoard(color, row, column){
+    gameState.board[row][column] = color
+}
 function clickColumn(clickEvent) {
   const mySquare = clickEvent.target;
   columnNumber = mySquare.classList[0];
   if (mySquare.matches("td")) {
     const myColumnNum = mySquare.classList[0];
     const myColumn = document.getElementsByClassName(myColumnNum);
-    for (i = myColumn.length - 1; i >= 0; i--) {
+    for (row = myColumn.length - 1; row >= 0; row--) {
       if (
-        !myColumn[i].classList.contains(gameState.colors[0]) &&
-        !myColumn[i].classList.contains(gameState.colors[1])
+        !myColumn[row].classList.contains(gameState.colors[0]) &&
+        !myColumn[row].classList.contains(gameState.colors[1])
       ) {
-        myColumn[i].classList.add("red");
-        return checkWin;
+        myColumn[row].classList.add("red");
+        updateBoard(gameState.colors[0], row, myColumnNum)
+        let win = checkWin(gameState.colors[0], row, myColumnNum)
+        if(win){
+           // winGame()
+        }
+        return
       }
     }//the column is already filled
     return null
   }
+}
+
+//checks if the move wins the game
+function checkWin(color, row, column) {
+    let count = 0;
+    //check column
+
+    for (let i = 0; i < gameState.board.length; i++) {
+      if (gameState.board[i][column] === color) {
+        count++;
+      } else {
+        count = 0;
+      }
+      if (count === gameState.winNum) {
+        return true;
+      }
+    }
+    count = 0;
+    //check row
+    for (let i = 0; i < gameState.board[0].length; i++) {
+      if (gameState.board[row][i] === color) {
+        count++;
+      } else {
+        count = 0;
+      }
+      if (count === gameState.winNum) {
+        return true;
+      }
+    }
+    count = 0;
+    //check left to right diagonal starting in the top left of your diagonal
+    let myCoordinate = [];
+    if (row < column) {
+      myCoordinate = [0, column - row];
+    } else {
+      myCoordinate = [row - column, 0];
+    }
+    while (gameState.board[myCoordinate[0]] !== undefined) {
+      //end the loop because you are checking out of bounds of the board
+      if (gameState.board[myCoordinate[0]][myCoordinate[1]] === color) {
+        count++;
+      } else {
+        count = 0;
+      }
+      if (count === gameState.winNum) {
+        return true;
+      }
+      myCoordinate[0]++;
+      myCoordinate[1]++;
+    }
+    //check right to left diagonal starting in the top right of your diagonal
+  if (row < gameState.board[0].length - column) {
+    myCoordinate = [0, column + row];
+  } else {
+    myCoordinate = [
+      row - (gameState.board[0].length - 1 - column),
+      gameState.board[0].length - 1,
+    ];
+  }
+  count = 0;
+  while (gameState.board[myCoordinate[0]] !== undefined) {
+    //end the loop because you are checking out of bounds of the board
+    if (gameState.board[myCoordinate[0]][myCoordinate[1]] === color) {
+      count++;
+    } else {
+      count = 0;
+    }
+    if (count === gameState.winNum) {
+      return true;
+    }
+    myCoordinate[0]++;
+    myCoordinate[1]--;
+  }
+
+  return false;
 }
 
 function createBoard(rows, columns) {
