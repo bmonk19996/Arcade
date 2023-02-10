@@ -7,7 +7,6 @@ const selectPlayer = document.getElementById("player-sel");
 const selectRow = document.getElementById("row-sel");
 const selectColumn = document.getElementById("column-sel");
 const selectWin = document.getElementById("win-sel");
-const replacementText = document.getElementById("replacement-text");
 const selectChoices = {
   board: [],
   rows: 3,
@@ -132,15 +131,19 @@ function isValidSquare(row, column) {
 function winGame() {
   let winner = "";
   if (gameState.playerOneTurn) {
-    
-    winner = "player one";
+    if(gameState.pTwoHuman){
+      winner = "player one has";
+    }else{
+      winner = "You have"
+    }
+
   } else if (gameState.pTwoHuman) {
-    winner = "player two";
+    winner = "player two has";
   } else {
-    winner = "the computer";
+    winner = "the computer has";
   }
   endGame();
-  winMessage.innerText = `${winner} has won the game`;
+  winMessage.innerText = `${winner} won the game`;
 }
 //when a player clicks on a square
 function selectSquare(event) {
@@ -310,8 +313,7 @@ function startGame() {
 }
 function changePlayer(clickEvent) {
   if (clickEvent.target.value === "human") {
-    selectLetter.classList.add("hide");
-    replacementText.classList.remove("hide");
+    selectLetter.parentElement.classList.add("hide")
     selectChoices.pTwoHuman = true;
     selectChoices.letters[0] = "X";
     selectChoices.letters[1] = "O";
@@ -319,8 +321,7 @@ function changePlayer(clickEvent) {
     selectLetter.selectedIndex = 0;
   }
   if (clickEvent.target.value === "computer") {
-    selectLetter.classList.remove("hide");
-    replacementText.classList.add("hide");
+    selectLetter.parentElement.classList.remove("hide");
     selectChoices.pTwoHuman = false;
   }
 }
