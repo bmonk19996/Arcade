@@ -7,6 +7,7 @@ const selectPlayer = document.getElementById("player-sel");
 const selectRow = document.getElementById("row-sel");
 const selectColumn = document.getElementById("column-sel");
 const selectWin = document.getElementById("win-sel");
+const selectColor = document.getElementById("color-sel")
 const selectChoices = {
   board: [],
   rows: 6,
@@ -301,6 +302,9 @@ function changeWin(clickEvent) {
   selectChoices.winNum = Number(clickEvent.target.value);
   warning();
 }
+function changeColor(){
+  selectChoices.colors.unshift(gameState.colors.pop())
+}
 //display error if new board is not able to be created in a way that can be won
 function warning() {
   if (
@@ -318,5 +322,6 @@ selectWin.addEventListener("change", changeWin);
 selectColumn.addEventListener("change", changeColumn);
 selectTurn.addEventListener("change", changeLetter);
 selectPlayer.addEventListener("change", changePlayer);
+selectColor.addEventListener("change", changeColor)
 myBoard.addEventListener("click", clickColumn);
 startButton.addEventListener("click", startGame);
