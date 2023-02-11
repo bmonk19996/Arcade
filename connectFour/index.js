@@ -30,19 +30,19 @@ const gameState = {
   computerStart: false,
 };
 
-//        console.log(newHTMLSquare.classList[0])
-function updateBoard(color, row, column){
-    gameState.board[row][column] = color
+function updateBoard(color, row, column) {
+  gameState.board[row][column] = color;
 }
+
 function clickColumn(clickEvent) {
   const mySquare = clickEvent.target;
   columnNumber = mySquare.classList[0];
   if (mySquare.matches("td") && gameState.start === true) {
     const myColumnNum = mySquare.classList[0];
     const myColumn = document.getElementsByClassName(myColumnNum);
-    let myColor = gameState.colors[0]
-    if(!(gameState.playerOneTurn)){
-      myColor = gameState.colors[1]
+    let myColor = gameState.colors[0];
+    if (!gameState.playerOneTurn) {
+      myColor = gameState.colors[1];
     }
     for (row = myColumn.length - 1; row >= 0; row--) {
       if (
@@ -50,73 +50,103 @@ function clickColumn(clickEvent) {
         !myColumn[row].classList.contains(gameState.colors[1])
       ) {
         myColumn[row].classList.add(myColor);
-        updateBoard(myColor, row, myColumnNum)
-        let win = checkWin(myColor, row, myColumnNum)
-        gameState.playerOneTurn = !gameState.playerOneTurn
-        if(win){
-          console.log(gameState.board)
-           gameState.start = false
+        updateBoard(myColor, row, myColumnNum);
+        let win = checkWin(myColor, row, myColumnNum);
+        if (win) {
+          winGame();
         }
-        return
+        gameState.playerOneTurn = !gameState.playerOneTurn;
+        if (gameState.pTwoHuman === false) {
+          let win = computerMove();
+          if (win) {
+            winGame();
+          }
+          gameState.playerOneTurn = !gameState.playerOneTurn;
+        }
+        return;
       }
-    }//the column is already filled
-    return null
+    } //the column is already filled
+    return null;
   }
 }
-
+function computerMove() {
+  //get all available moves
+  moves = availableMoves();
+  if(moves.length === 0){
+    drawGame()
+    return false
+  }
+  //check for winning moves
+  for (let i = 0; i < moves.length; i++) {
+    if (checkWin(gameState.colors[1], moves[i][0], moves[i][1])) {
+      //do the move
+      return true
+    }
+  }
+  //check to stop winning moves
+  for (let i = 0; i < moves.length; i++) {
+    if (checkWin(gameState.colors[0], moves[i][0], moves[i][1])) {
+      //do the move
+      return false
+    }
+  }
+  //random move
+  let ranNum = Math.floor(Math.random() * moves.length);
+  //do move ranNum
+  return false
+}
 //checks if the move wins the game
 function checkWin(color, row, column) {
-    let count = 0;
-    //check column
-    row = Number(row)
-    column = Number(column)
-    for (let i = 0; i < gameState.board.length; i++) {
-      if (gameState.board[i][column] === color) {
-        count++;
-      } else {
-        count = 0;
-      }
-      if (count === gameState.winNum) {
-        return true;
-      }
-    }
-    count = 0;
-    //check row
-    for (let i = 0; i < gameState.board[0].length; i++) {
-      if (gameState.board[row][i] === color) {
-        count++;
-      } else {
-        count = 0;
-      }
-      if (count === gameState.winNum) {
-        return true;
-      }
-    }
-    count = 0;
-    //check left to right diagonal starting in the top left of your diagonal
-    let myCoordinate = [];
-    if (row < column) {
-      myCoordinate = [0, column - row];
+  let count = 0;
+  //check column
+  row = Number(row);
+  column = Number(column);
+  for (let i = 0; i < gameState.board.length; i++) {
+    if (gameState.board[i][column] === color) {
+      count++;
     } else {
-      myCoordinate = [row - column, 0];
+      count = 0;
     }
-    while (gameState.board[myCoordinate[0]] !== undefined) {
-      //end the loop because you are checking out of bounds of the board
-      if (gameState.board[myCoordinate[0]][myCoordinate[1]] === color) {
-        count++;
-      } else {
-        count = 0;
-      }
-      if (count === gameState.winNum) {
-        return true;
-      }
-      myCoordinate[0]++;
-      myCoordinate[1]++;
+    if (count === gameState.winNum) {
+      return true;
     }
-    //check right to left diagonal starting in the top right of your diagonal
+  }
+  count = 0;
+  //check row
+  for (let i = 0; i < gameState.board[0].length; i++) {
+    if (gameState.board[row][i] === color) {
+      count++;
+    } else {
+      count = 0;
+    }
+    if (count === gameState.winNum) {
+      return true;
+    }
+  }
+  count = 0;
+  //check left to right diagonal starting in the top left of your diagonal
+  let myCoordinate = [];
+  if (row < column) {
+    myCoordinate = [0, column - row];
+  } else {
+    myCoordinate = [row - column, 0];
+  }
+  while (gameState.board[myCoordinate[0]] !== undefined) {
+    //end the loop because you are checking out of bounds of the board
+    if (gameState.board[myCoordinate[0]][myCoordinate[1]] === color) {
+      count++;
+    } else {
+      count = 0;
+    }
+    if (count === gameState.winNum) {
+      return true;
+    }
+    myCoordinate[0]++;
+    myCoordinate[1]++;
+  }
+  //check right to left diagonal starting in the top right of your diagonal
   if (row < gameState.board[0].length - column) {
     myCoordinate = [0, column + row];
-    console.log(myCoordinate)
   } else {
     myCoordinate = [
       row - (gameState.board[0].length - 1 - column),
@@ -126,7 +156,6 @@ function checkWin(color, row, column) {
   count = 0;
 
   while (gameState.board[myCoordinate[0]] !== undefined) {
-
     //end the loop because you are checking out of bounds of the board
     if (gameState.board[myCoordinate[0]][myCoordinate[1]] === color) {
       count++;
@@ -142,7 +171,21 @@ function checkWin(color, row, column) {
 
   return false;
 }
+function availableMoves() {
+  let moves = [];
+  //check each column for its move
+  for(let col = 0; col < gameState.board[0].length; col++){
+    let found = false
+    for(let row = gameState.board.length - 1; row >= 0; row-- ){
 
+      if(!found){
+        moves.push([row,col])
+        found = true
+      }
+    }
+  }
+  return moves;
+}
 function createBoard(rows, columns) {
   for (let i = 0; i < rows; i++) {
     const newHTMLRow = document.createElement("tr");
@@ -183,9 +226,32 @@ function startGame() {
     computerMove();
   }
 }
-
+function drawGame() {
+  winMessage.innerText = `the game has ended in a draw`;
+  endGame();
+}
+//stop any more changes from happening
+function endGame() {
+  gameState.start = false;
+}
+//creates the win game message and stops future moves
+function winGame() {
+  let winner = "";
+  if (gameState.playerOneTurn) {
+    if (gameState.pTwoHuman) {
+      winner = "player one has";
+    } else {
+      winner = "You have";
+    }
+  } else if (gameState.pTwoHuman) {
+    winner = "player two has";
+  } else {
+    winner = "the computer has";
+  }
+  endGame();
+  winMessage.innerText = `${winner} won the game`;
+}
 function changePlayer(clickEvent) {
-  console.log("hello");
   if (clickEvent.target.value === "human") {
     selectTurn.parentElement.classList.add("hide");
     selectChoices.pTwoHuman = true;

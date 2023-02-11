@@ -31,3 +31,12 @@ article span{
     flex-direction: column;
     align-items: center;
 }
+td:last-child{
+    border-right: dashed;
+}
+td:first-child{
+    border-left: dashed;
+}
+tr:last-child td{
+    border-bottom: dashed;
+}
