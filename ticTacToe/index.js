@@ -149,7 +149,7 @@ function clickSquare(event) {
     let squareNumber = mySquare.id;
     let row = Math.floor(squareNumber / gameState.board[0].length);
     let column = squareNumber % gameState.board[0].length;
-    if (isValidSquare(row, column)) {
+    if (isValidSquare(row, column) && gameState.start === true) {
       letter = playerMove(gameState.playerOneTurn, mySquare);
       updateBoard(letter, row, column);
       if (checkWin(letter, row, column)) {
