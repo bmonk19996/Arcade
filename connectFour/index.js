@@ -37,7 +37,7 @@ function updateBoard(color, row, column) {
 function clickColumn(clickEvent) {
   const mySquare = clickEvent.target;
   columnNumber = mySquare.classList[0];
-  if (mySquare.matches("td") && gameState.start === true) {
+  if ( mySquare.matches("span")  && gameState.start === true) {
     const myColumnNum = mySquare.classList[0];
     const myColumn = document.getElementsByClassName(myColumnNum);
     let myColor = gameState.colors[0];
@@ -55,11 +55,17 @@ function clickColumn(clickEvent) {
         if (win) {
           winGame();
         }
+        if (availableMoves().length === 0) {
+          drawGame();
+        }
         gameState.playerOneTurn = !gameState.playerOneTurn;
         if (gameState.pTwoHuman === false) {
           let win = computerMove();
           if (win) {
             winGame();
+          }
+          if (availableMoves().length === 0) {
+            drawGame();
           }
           gameState.playerOneTurn = !gameState.playerOneTurn;
         }
@@ -70,30 +76,41 @@ function clickColumn(clickEvent) {
   }
 }
 function computerMove() {
-  //get all available moves
-  moves = availableMoves();
-  if(moves.length === 0){
-    drawGame()
-    return false
-  }
-  //check for winning moves
-  for (let i = 0; i < moves.length; i++) {
-    if (checkWin(gameState.colors[1], moves[i][0], moves[i][1])) {
-      //do the move
-      return true
+  if (gameState.start) {
+    //get all available moves
+    moves = availableMoves();
+    if (moves.length === 0) {
+      drawGame();
+      return false;
     }
-  }
-  //check to stop winning moves
-  for (let i = 0; i < moves.length; i++) {
-    if (checkWin(gameState.colors[0], moves[i][0], moves[i][1])) {
-      //do the move
-      return false
+    //check for winning moves
+    for (let i = 0; i < moves.length; i++) {
+      updateBoard(gameState.colors[1], moves[i][0], moves[i][1]);
+      if (checkWin(gameState.colors[1], moves[i][0], moves[i][1])) {
+        const myColumn = document.getElementsByClassName(moves[i][1]);
+        myColumn[moves[i][0]].classList.add(gameState.colors[1]);
+        return true;
+      }
+      updateBoard(null, moves[i][0], moves[i][1]);
     }
+    //check to stop winning moves
+    for (let i = 0; i < moves.length; i++) {
+      updateBoard(gameState.colors[0], moves[i][0], moves[i][1]);
+      if (checkWin(gameState.colors[0], moves[i][0], moves[i][1])) {
+        const myColumn = document.getElementsByClassName(moves[i][1]);
+        myColumn[moves[i][0]].classList.add(gameState.colors[1]);
+        updateBoard(gameState.colors[1], moves[i][0], moves[i][1]);
+        return false;
+      }
+      updateBoard(null, moves[i][0], moves[i][1]);
+    }
+    //random move
+    let ranNum = Math.floor(Math.random() * moves.length);
+    const myColumn = document.getElementsByClassName(moves[ranNum][1]);
+    myColumn[moves[ranNum][0]].classList.add(gameState.colors[1]);
+    updateBoard(gameState.colors[1], moves[ranNum][0], moves[ranNum][1]);
+    return false;
   }
-  //random move
-  let ranNum = Math.floor(Math.random() * moves.length);
-  //do move ranNum
-  return false
 }
 //checks if the move wins the game
 function checkWin(color, row, column) {
@@ -174,13 +191,12 @@ function checkWin(color, row, column) {
 function availableMoves() {
   let moves = [];
   //check each column for its move
-  for(let col = 0; col < gameState.board[0].length; col++){
-    let found = false
-    for(let row = gameState.board.length - 1; row >= 0; row-- ){
-
-      if(!found){
-        moves.push([row,col])
-        found = true
+  for (let col = 0; col < gameState.board[0].length; col++) {
+    let found = false;
+    for (let row = gameState.board.length - 1; row >= 0; row--) {
+      if (!found && gameState.board[row][col] === null) {
+        moves.push([row, col]);
+        found = true;
       }
     }
   }
@@ -192,8 +208,9 @@ function createBoard(rows, columns) {
     let newRow = [];
     for (let j = 0; j < columns; j++) {
       const newHTMLSquare = document.createElement("td");
+      const innerSquare = document.createElement("span");
       //this class is its column number
-      newHTMLSquare.classList.add(`${j}`);
+      innerSquare.classList.add(`${j}`);
       if (j > 0) {
         newHTMLSquare.classList.add("inner-column");
       }
@@ -201,6 +218,7 @@ function createBoard(rows, columns) {
         newHTMLSquare.classList.add("inner-row");
       }
       newRow.push(null);
+      newHTMLSquare.appendChild(innerSquare)
       newHTMLRow.appendChild(newHTMLSquare);
     }
     gameState.board.push(newRow);
