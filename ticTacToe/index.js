@@ -47,6 +47,8 @@ function updateBoard(letter, row, column) {
 //checks if the move wins the game
 function checkWin(letter, row, column) {
   let count = 0;
+  row = Number(row)
+  column = Number(column)
   //check column
   for (let i = 0; i < gameState.board.length; i++) {
     if (gameState.board[i][column] === letter) {

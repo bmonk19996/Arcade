@@ -37,19 +37,25 @@ function updateBoard(color, row, column){
 function clickColumn(clickEvent) {
   const mySquare = clickEvent.target;
   columnNumber = mySquare.classList[0];
-  if (mySquare.matches("td")) {
+  if (mySquare.matches("td") && gameState.start === true) {
     const myColumnNum = mySquare.classList[0];
     const myColumn = document.getElementsByClassName(myColumnNum);
+    let myColor = gameState.colors[0]
+    if(!(gameState.playerOneTurn)){
+      myColor = gameState.colors[1]
+    }
     for (row = myColumn.length - 1; row >= 0; row--) {
       if (
         !myColumn[row].classList.contains(gameState.colors[0]) &&
         !myColumn[row].classList.contains(gameState.colors[1])
       ) {
-        myColumn[row].classList.add("red");
-        updateBoard(gameState.colors[0], row, myColumnNum)
-        let win = checkWin(gameState.colors[0], row, myColumnNum)
+        myColumn[row].classList.add(myColor);
+        updateBoard(myColor, row, myColumnNum)
+        let win = checkWin(myColor, row, myColumnNum)
+        gameState.playerOneTurn = !gameState.playerOneTurn
         if(win){
-           // winGame()
+          console.log(gameState.board)
+           gameState.start = false
         }
         return
       }
@@ -62,7 +68,8 @@ function clickColumn(clickEvent) {
 function checkWin(color, row, column) {
     let count = 0;
     //check column
-
+    row = Number(row)
+    column = Number(column)
     for (let i = 0; i < gameState.board.length; i++) {
       if (gameState.board[i][column] === color) {
         count++;
@@ -109,6 +116,7 @@ function checkWin(color, row, column) {
     //check right to left diagonal starting in the top right of your diagonal
   if (row < gameState.board[0].length - column) {
     myCoordinate = [0, column + row];
+    console.log(myCoordinate)
   } else {
     myCoordinate = [
       row - (gameState.board[0].length - 1 - column),
@@ -116,7 +124,9 @@ function checkWin(color, row, column) {
     ];
   }
   count = 0;
+
   while (gameState.board[myCoordinate[0]] !== undefined) {
+
     //end the loop because you are checking out of bounds of the board
     if (gameState.board[myCoordinate[0]][myCoordinate[1]] === color) {
       count++;
