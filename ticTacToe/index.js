@@ -156,9 +156,11 @@ function clickSquare(event) {
       updateBoard(letter, row, column);
       if (checkWin(letter, row, column)) {
         winGame();
+        return
       }
       if(validSquares().length === 0){
         drawGame()
+        return
       }
       //change player turn and check if computer is other player
       gameState.playerOneTurn = !gameState.playerOneTurn;
@@ -166,6 +168,11 @@ function clickSquare(event) {
         let win = computerMove();
         if (win) {
           winGame();
+          return
+        }
+        if(validSquares().length === 0){
+          drawGame()
+          return
         }
         //return to player one turn
         gameState.playerOneTurn = !gameState.playerOneTurn;
@@ -205,21 +212,6 @@ function computerMove() {
   //get all available moves and check for a draw
   if (gameState.start) {
     freeSquares = validSquares();
-    // if (freeSquares.length === 0) {
-    //   drawGame();
-    //   return false;
-    // }
-    if (freeSquares.length === 1) {
-      const mySquare = document.getElementById(freeSquares[0][0]);
-      playerMove(false, mySquare);
-      updateBoard(
-        playerMove(false, mySquare),
-        freeSquares[0][1],
-        freeSquares[0][2]
-      );
-      drawGame();
-      return false;
-    }
     let squareCount = 0;
     //check for winning moves and do them
     for (let i = 0; i < gameState.board.length; i++) {

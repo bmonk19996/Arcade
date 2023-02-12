@@ -55,18 +55,22 @@ function clickColumn(clickEvent) {
         let win = checkWin(myColor, row, myColumnNum);
         if (win) {
           winGame();
+          return
         }
         if (availableMoves().length === 0) {
           drawGame();
+          return
         }
         gameState.playerOneTurn = !gameState.playerOneTurn;
         if (gameState.pTwoHuman === false) {
           let win = computerMove();
           if (win) {
             winGame();
+            return
           }
           if (availableMoves().length === 0) {
             drawGame();
+            return
           }
           gameState.playerOneTurn = !gameState.playerOneTurn;
         }
